@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookIt: Experiences & Slots
 
-## Getting Started
+A modern, full-stack booking application for travel experiences built with Next.js, TypeScript, and TailwindCSS.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Experience Listing**: Browse and search through various travel experiences
+- **Detailed Views**: View comprehensive information about each experience
+- **Slot Selection**: Choose available dates and time slots
+- **Smart Booking**: Complete bookings with form validation
+- **Promo Codes**: Apply discount codes for special offers
+- **Responsive Design**: Fully mobile-friendly interface
+- **Modern UI**: Clean, professional design with smooth animations
+- **Type-Safe**: Built with TypeScript for robust code quality
+
+## 📋 Project Structure
+
+```
+highwaydelite/
+├── app/
+│   ├── page.tsx                    # Home page - Experience listing
+│   ├── experiences/[id]/page.tsx   # Experience details page
+│   ├── checkout/page.tsx           # Checkout page
+│   ├── booking/result/page.tsx     # Booking confirmation/failure
+│   ├── layout.tsx                  # Root layout
+│   └── globals.css                 # Global styles
+├── components/
+│   ├── ui/                         # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Input.tsx
+│   │   ├── Loading.tsx
+│   │   ├── Badge.tsx
+│   │   └── index.ts
+│   └── ExperienceCard.tsx          # Experience card component
+├── lib/
+│   ├── services/
+│   │   └── api.ts                  # API service layer
+│   ├── config/
+│   │   └── api.config.ts           # API configuration
+│   ├── data/
+│   │   └── mockData.ts             # Mock data for development
+│   └── utils/
+│       └── validation.ts           # Validation utilities
+├── types/
+│   └── index.ts                    # TypeScript type definitions
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: TailwindCSS 4
+- **HTTP Client**: Axios
+- **Font**: Inter (Google Fonts)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Getting Started
 
-## Learn More
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Run development server**
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎨 Pages Overview
 
-## Deploy on Vercel
+### 1. Home Page (`/`)
+- Grid layout of experience cards with search and category filtering
+- Responsive design (1/2/3 column grid)
+- Loading states and empty states
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2. Experience Details (`/experiences/[id]`)
+- Full experience information with image gallery
+- Available date/time slot selection
+- Guest selection and real-time price calculation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 3. Checkout (`/checkout`)
+- Customer information form with validation
+- Promo code application
+- Order summary and price breakdown
+
+### 4. Booking Result (`/booking/result`)
+- Success confirmation with booking reference
+- Complete booking details
+- Failure handling with helpful error messages
+
+## 💡 Available Promo Codes (Development)
+- `WELCOME10`: 10% off (minimum $50 purchase)
+- `SUMMER25`: 25% off (minimum $100, max $50 discount)
+- `SAVE20`: $20 off (minimum $80 purchase)
+
+## 🔧 Configuration
+
+### Connect to Backend API
+Edit `lib/config/api.config.ts`:
+```typescript
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+```
+
+Create `.env.local`:
+```
+NEXT_PUBLIC_API_URL=your_backend_url_here
+```
+
+## 🚀 Build & Deploy
+
+```bash
+# Production build
+npm run build
+npm start
+
+# Deploy to Vercel
+vercel
+```
+
+## 📱 Key Features
+
+✅ TypeScript for type safety  
+✅ Clean component architecture  
+✅ Proper error handling  
+✅ Form validation  
+✅ Responsive design  
+✅ Accessible UI  
+✅ SEO optimized  
+✅ Performance optimized  
+
+---
+
+**Built with ❤️ using Next.js, TypeScript, and TailwindCSS**
+

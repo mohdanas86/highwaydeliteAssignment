@@ -1,64 +1,201 @@
-import Image from "next/image";
+/**
+ * Home Page - Experience Listing
+ * Highway Delite design with improved shadcn components and better spacing
+ */
 
-export default function Home() {
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Experience } from '@/types';
+import { experienceService } from '@/lib/services/api';
+import { ExperienceCard } from '@/components/ExperienceCard';
+import { Button } from '@/components/ui/Button';
+import { ExperienceCardSkeleton } from '@/components/ui/Loading';
+import { Card, CardContent } from '@/components/ui/Card';
+import { AlertCircle, Search, RefreshCw } from 'lucide-react';
+
+export default function HomePage() {
+  const searchParams = useSearchParams();
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [filteredExperiences, setFilteredExperiences] = useState<Experience[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Get search query from URL on mount
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+  }, [searchParams]);
+
+  // Fetch experiences on mount
+  useEffect(() => {
+    fetchExperiences();
+  }, []);
+
+  // Apply filters when category or search changes
+  useEffect(() => {
+    filterExperiences();
+  }, [selectedCategory, searchQuery, experiences]);
+
+  const fetchExperiences = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await experienceService.getExperiences();
+      setExperiences(data);
+      setFilteredExperiences(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load experiences');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filterExperiences = () => {
+    let filtered = [...experiences];
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (exp) =>
+          exp.title.toLowerCase().includes(query) ||
+          exp.location.toLowerCase().includes(query) ||
+          exp.description?.toLowerCase().includes(query) ||
+          exp.shortDescription.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(
+        (exp) => exp.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
+    }
+
+    setFilteredExperiences(filtered);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    // Update URL to remove search parameter
+    window.history.replaceState({}, '', window.location.pathname);
+  };
+
+  const categories = [
+    'all',
+    ...Array.from(new Set(experiences.map((exp) => exp.category))),
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 max-w-7xl">
+        {/* Error State */}
+        {error && (
+          <div className="max-w-md mx-auto mb-12">
+            <Card className="border-red-200 bg-red-50/50">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Something went wrong
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-6 leading-relaxed">{error}</p>
+                  <Button
+                    onClick={fetchExperiences}
+                    variant="outline"
+                    className="border-red-300 text-red-700 hover:bg-red-50"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Try Again
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[...Array(6)].map((_, index) => (
+              <ExperienceCardSkeleton key={index} />
+            ))}
+          </div>
+        )}
+
+        {/* Experience Grid */}
+        {!isLoading && !error && filteredExperiences.length > 0 && (
+          <>
+            {/* Search Results Header */}
+            {/* {searchQuery.trim() && (
+              <div className="mb-8 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Search Results for "{searchQuery}"
+                </h2>
+                <p className="text-gray-600">
+                  Found {filteredExperiences.length} experience{filteredExperiences.length !== 1 ? 's' : ''}
+                </p>
+                <Button
+                  onClick={clearSearch}
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2 text-gray-500 hover:text-gray-700"
+                >
+                  Clear search
+                </Button>
+              </div>
+            )} */}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {filteredExperiences.map((experience) => (
+                <ExperienceCard key={experience.id} experience={experience} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && filteredExperiences.length === 0 && (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <Search className="h-16 w-16 text-gray-300 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                {searchQuery.trim() ? 'No matching experiences found' : 'No experiences found'}
+              </h3>
+              <p className="text-gray-600 mb-8 leading-relaxed">
+                {searchQuery.trim()
+                  ? `No experiences match "${searchQuery}". Try a different search term.`
+                  : 'Try selecting a different category to find what you\'re looking for'
+                }
+              </p>
+              <div className="flex gap-3 justify-center">
+                {searchQuery.trim() && (
+                  <Button
+                    onClick={clearSearch}
+                    variant="outline"
+                    size="lg"
+                  >
+                    Clear Search
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setSelectedCategory('all')}
+                  variant="primary"
+                  size="lg"
+                >
+                  Show All Experiences
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

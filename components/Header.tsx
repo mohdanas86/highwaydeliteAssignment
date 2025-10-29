@@ -29,21 +29,15 @@ export const Header: React.FC = () => {
 
     return (
         <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-            <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-4">
+            <div className="mx-auto max-w-[1440px] px-2 sm:px-4 lg:px-8 py-2 sm:py-3">
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105">
-                        <Image
-                            src="/logo.png"
-                            alt="Highway Delite Logo"
-                            width={140}
-                            height={70}
-                            className="object-contain w-auto"
-                        />
+                        <img src="/logo.png" alt="Highway Delite Logo" className="object-contain w-auto h-8 sm:h-10 md:h-12" />
                     </Link>
 
                     {/* Desktop Search Bar */}
-                    <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-8 gap-4">
+                    <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md lg:max-w-lg mx-4 sm:mx-6 lg:mx-8 gap-3 sm:gap-4">
                         <div className="relative w-full">
                             <Input
                                 type="text"
@@ -82,7 +76,7 @@ export const Header: React.FC = () => {
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden border-t border-gray-200 bg-white">
-                        <div className="px-4 py-6 space-y-4">
+                        <div className="px-3 sm:px-4 py-4 sm:py-6 space-y-3 sm:space-y-4">
                             {/* Mobile Search */}
                             <form onSubmit={handleSearch} className="flex gap-2">
                                 <div className="relative flex-1">
@@ -91,21 +85,21 @@ export const Header: React.FC = () => {
                                         placeholder="Search experiences..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 h-10"
+                                        className="pl-8 sm:pl-10 h-9 sm:h-10"
                                     />
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
                                 </div>
                                 <Button
                                     type="submit"
                                     variant="primary"
-                                    className="h-10 px-4"
+                                    className="h-9 sm:h-10 px-3 sm:px-4"
                                 >
                                     Search
                                 </Button>
                             </form>
 
                             {/* Mobile Navigation */}
-                            <nav className="flex flex-col space-y-2">
+                            <nav className="flex flex-col space-y-1 sm:space-y-2">
                                 <Button
                                     variant="ghost"
                                     className="justify-start"

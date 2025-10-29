@@ -1,36 +1,18 @@
 /**
  * Checkout Page
- * Collect user information and process booking with improved shadcn design
+ * Collect user information and process booking
  */
 
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Experience, TimeSlot, BookingFormData, PromoCode, FormErrors } from '@/types';
-import { bookingService, promoService } from '@/lib/services/api';
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, TextArea } from '@/components/ui';
-import { Badge } from '@/components/ui/Badge';
+import { Experience, TimeSlot, BookingFormData, FormErrors } from '@/types';
+import { bookingService } from '@/lib/services/api';
+import { Button, Card, CardContent, Input } from '@/components/ui';
 import { Loading } from '@/components/ui/Loading';
-import {
-  validateBookingForm,
-  formatCurrency,
-  formatDate,
-  formatTime,
-  parsePrice,
-} from '@/lib/utils/validation';
-import {
-  ArrowLeft,
-  CreditCard,
-  User,
-  Mail,
-  Phone,
-  Tag,
-  Percent,
-  CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+import { formatCurrency, formatDate, formatTime, parsePrice } from '@/lib/utils/validation';
+import { ArrowLeft, Check } from 'lucide-react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -39,46 +21,55 @@ export default function CheckoutPage() {
   const [slot, setSlot] = useState<TimeSlot | null>(null);
   const [numberOfGuests, setNumberOfGuests] = useState(1);
 
-  const [formData, setFormData] = useState<BookingFormData>({
-    firstName: '',
-    lastName: '',
+  const [formData, setFormData] = useState({
+    fullName: '',
     email: '',
-    phone: '',
-    specialRequests: '',
-    numberOfGuests: 1,
+    promoCode: '',
   });
 
-  const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
-  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
-  const [promoError, setPromoError] = useState('');
-
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Retrieve booking data from sessionStorage
-    const bookingData = sessionStorage.getItem('bookingData');
+    // Retrieve booking data from sessionStorage with validation
+    const bookingData = sessionStorage.getItem('highway_delite_booking_data');
     if (!bookingData) {
+      console.warn('No booking data found, redirecting to home');
       router.push('/');
       return;
     }
 
     try {
       const data = JSON.parse(bookingData);
+
+      // Validate booking data structure
+      if (!data.experience || !data.slot || !data.numberOfGuests) {
+        console.error('Invalid booking data structure');
+        router.push('/');
+        return;
+      }
+
+      // Check if booking data is expired (24 hours)
+      const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      if (data.timestamp && Date.now() - data.timestamp > maxAge) {
+        console.warn('Booking data expired');
+        sessionStorage.removeItem('highway_delite_booking_data');
+        router.push('/');
+        return;
+      }
+
       setExperience(data.experience);
       setSlot(data.slot);
       setNumberOfGuests(data.numberOfGuests);
-      setFormData((prev) => ({ ...prev, numberOfGuests: data.numberOfGuests }));
     } catch (error) {
       console.error('Error parsing booking data:', error);
+      sessionStorage.removeItem('highway_delite_booking_data');
       router.push('/');
     }
   }, [router]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // Clear error for this field
@@ -91,43 +82,18 @@ export default function CheckoutPage() {
     }
   };
 
-  const handleApplyPromo = async () => {
-    if (!promoCode.trim()) return;
-
-    setIsValidatingPromo(true);
-    setPromoError('');
-
-    try {
-      const promo = await promoService.validatePromoCode(promoCode, subtotal);
-
-      if (promo && promo.isValid) {
-        setAppliedPromo(promo);
-        setPromoError('');
-      } else {
-        setPromoError('Invalid or expired promo code');
-        setAppliedPromo(null);
-      }
-    } catch (error) {
-      setPromoError('Failed to validate promo code');
-      setAppliedPromo(null);
-    } finally {
-      setIsValidatingPromo(false);
-    }
-  };
-
-  const handleRemovePromo = () => {
-    setAppliedPromo(null);
-    setPromoCode('');
-    setPromoError('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form
-    const validationErrors = validateBookingForm(formData);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    // Basic validation
+    const newErrors: FormErrors = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (formData.fullName.trim() && formData.fullName.trim().length < 2) newErrors.fullName = 'Full name must be at least 2 characters';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (!agreeToTerms) newErrors.agreeToTerms = 'You must agree to the terms';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
@@ -139,25 +105,33 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      // Split full name into first and last name for API compatibility
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : nameParts[0] || '';
+
       const bookingRequest = {
         experienceId: experience.id,
         slotId: slot.id,
-        user: formData,
+        user: {
+          firstName: firstName,
+          lastName: lastName,
+          email: formData.email,
+          phone: '',
+          specialRequests: '',
+          numberOfGuests,
+        },
         numberOfGuests,
-        promoCode: appliedPromo?.code,
+        promoCode: formData.promoCode || undefined,
       };
 
       const response = await bookingService.createBooking(bookingRequest);
 
       if (response.success && response.booking) {
-        // Store booking result
-        sessionStorage.setItem('bookingResult', JSON.stringify(response));
-        sessionStorage.removeItem('bookingData');
-
-        // Redirect to result page
+        sessionStorage.setItem('highway_delite_booking_result', JSON.stringify(response));
+        sessionStorage.removeItem('highway_delite_booking_data'); // Clear temporary booking data
         router.push(`/booking/result?success=true&ref=${response.booking.bookingReference}`);
       } else {
-        // Redirect to error result page
         router.push(`/booking/result?success=false&error=${encodeURIComponent(response.message)}`);
       }
     } catch (error) {
@@ -173,268 +147,184 @@ export default function CheckoutPage() {
   }
 
   const subtotal = parsePrice(experience.price) * numberOfGuests;
-  const discount = appliedPromo ? promoService.calculateDiscount(appliedPromo, subtotal) : 0;
-  const tax = (subtotal - discount) * 0.1;
-  const total = subtotal - discount + tax;
+  const tax = subtotal * 0.1;
+  const total = subtotal + tax;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 lg:py-12">
-      <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8 lg:mb-12">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4 hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <div className="text-center">
-            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-              Complete Your Booking
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Just a few more details to secure your experience
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px] pt-4 sm:pt-6 pb-2 sm:pb-4">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="hover:bg-gray-100"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Form Section */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Customer Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <User className="w-6 h-6" />
-                  Customer Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      label="First Name"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      error={errors.firstName}
-                      required
-                      placeholder="Enter your first name"
-                    />
-
-                    <Input
-                      label="Last Name"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      error={errors.lastName}
-                      required
-                      placeholder="Enter your last name"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      label="Email Address"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      error={errors.email}
-                      required
-                      placeholder="your@email.com"
-                      helperText="We'll send your booking confirmation here"
-                    />
-
-                    <Input
-                      label="Phone Number"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      error={errors.phone}
-                      required
-                      placeholder="+91 98765 43210"
-                      helperText="Include country code for international numbers"
-                    />
-                  </div>
-
-                  <TextArea
-                    label="Special Requests"
-                    name="specialRequests"
-                    value={formData.specialRequests}
-                    onChange={handleInputChange}
-                    placeholder="Any dietary restrictions, accessibility needs, or special requests..."
-                    helperText="Optional: Let us know about any special requirements"
-                    rows={4}
-                  />
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Promo Code */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Tag className="w-6 h-6" />
-                  Promo Code
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {appliedPromo ? (
-                  <div className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                      <div>
-                        <div className="font-semibold text-green-900">
-                          {appliedPromo.code} Applied!
-                        </div>
-                        <div className="text-sm text-green-700">
-                          {appliedPromo.discountType === 'percentage'
-                            ? `${appliedPromo.discountValue}% off`
-                            : `${formatCurrency(appliedPromo.discountValue)} off`}
-                        </div>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="sm" onClick={handleRemovePromo}>
-                      Remove
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex gap-3">
+      {/* Main Content */}
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12 max-w-[1440px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+          {/* Left Side - Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-[#EFEFEF] rounded-xl">
+              <Card className="w-full border-none rounded-xl shadow-none">
+                <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                  {/* Full Name and Email */}
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1">
                       <Input
-                        placeholder="Enter promo code"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                        error={promoError}
+                        label="Full Name"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        error={errors.fullName}
+                        placeholder="Enter your full name"
+                        className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        label="Email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        error={errors.email}
+                        placeholder="your@email.com"
+                        className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Promo Code */}
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-end">
+                    <div className="flex-1">
+                      <Input
+                        label="Promo Code"
+                        name="promoCode"
+                        value={formData.promoCode}
+                        onChange={handleInputChange}
+                        placeholder="Promo code"
+                        className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
                       />
                     </div>
                     <Button
-                      variant="outline"
-                      onClick={handleApplyPromo}
-                      isLoading={isValidatingPromo}
-                      disabled={!promoCode.trim()}
+                      className="rounded-lg px-4 py-2.5 bg-black text-white h-auto w-full sm:w-auto"
                     >
                       Apply
                     </Button>
                   </div>
-                )}
 
-                <div className="mt-4 text-sm text-gray-500">
-                  Try: <span className="font-mono bg-gray-100 px-2 py-1 rounded">WELCOME10</span>,
-                  <span className="font-mono bg-gray-100 px-2 py-1 rounded ml-2">SUMMER25</span>, or
-                  <span className="font-mono bg-gray-100 px-2 py-1 rounded ml-2">SAVE20</span>
-                </div>
-              </CardContent>
-            </Card>
+                  {/* Terms Checkbox */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="agreeToTerms"
+                      checked={agreeToTerms}
+                      onChange={(e) => setAgreeToTerms(e.target.checked)}
+                      className="w-4 h-4 text-[#FFD11A] border-gray-300 rounded focus:ring-[#FFD11A]"
+                    />
+                    <label
+                      htmlFor="agreeToTerms"
+                      className="text-sm text-gray-700 cursor-pointer"
+                      style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '12px', letterSpacing: '0%' }}
+                    >
+                      I agree to the terms and safety policy
+                    </label>
+                  </div>
+                  {errors.agreeToTerms && (
+                    <p className="text-red-500 text-sm">{errors.agreeToTerms}</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          {/* Order Summary */}
+          {/* Right Side - Booking Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-2xl">
-                    <CreditCard className="w-6 h-6" />
-                    Order Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Experience Details */}
-                  <div className="flex gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200">
-                      <Image
-                        src={experience.imageUrl || '/placeholder-image.jpg'}
-                        alt={experience.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1">
-                        {experience.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2">{experience.location}</p>
-                      <Badge variant="secondary" className="text-xs">
-                        {experience.category}
-                      </Badge>
-                    </div>
+            <div className="sticky top-6">
+              <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-full max-w-[387px] lg:w-[387px]">
+                <CardContent className="p-3 sm:p-2 space-y-2 sm:space-y-3">
+                  {/* Experience */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Experience</span>
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', letterSpacing: '0%' }}>
+                      {experience?.title || 'Experience Name'}
+                    </span>
                   </div>
 
-                  {/* Booking Details */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Date</span>
-                      <span className="font-medium text-gray-900">
-                        {formatDate(slot.date, 'short')}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Time</span>
-                      <span className="font-medium text-gray-900">
-                        {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Guests</span>
-                      <span className="font-medium text-gray-900">{numberOfGuests}</span>
-                    </div>
+                  {/* Date */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Date</span>
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {slot?.date ? formatDate(slot.date, 'short') : 'Date'}
+                    </span>
                   </div>
 
-                  {/* Price Breakdown */}
-                  <div className="border-t pt-4 space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">
-                        {experience.price} × {numberOfGuests}
-                      </span>
-                      <span className="text-gray-900">{formatCurrency(subtotal)}</span>
-                    </div>
-
-                    {discount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-green-600 flex items-center gap-1">
-                          <Percent className="w-4 h-4" />
-                          Discount
-                        </span>
-                        <span className="text-green-600">-{formatCurrency(discount)}</span>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Tax (10%)</span>
-                      <span className="text-gray-900">{formatCurrency(tax)}</span>
-                    </div>
-
-                    <div className="flex justify-between text-xl font-bold pt-3 border-t">
-                      <span>Total</span>
-                      <span className="text-[#FFD11A]">{formatCurrency(total)}</span>
-                    </div>
+                  {/* Time */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Time</span>
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {slot?.startTime ? formatTime(slot.startTime) : 'Time'}
+                    </span>
                   </div>
 
-                  {/* Submit Button */}
+                  {/* Quantity */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Qty</span>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {numberOfGuests}
+                    </span>
+                  </div>
+
+                  {/* Subtotal */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Subtotal</span>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', letterSpacing: '0%' }}>
+                      {formatCurrency(subtotal)}
+                    </span>
+                  </div>
+
+                  {/* Taxes */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Taxes</span>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {formatCurrency(tax)}
+                    </span>
+                  </div>
+
+                  {/* Total */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-300">
+                    <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Total</span>
+                    <span className="" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', letterSpacing: '0%' }}>
+                      {formatCurrency(total)}
+                    </span>
+                  </div>
+
+                  {/* Pay and Confirm Button */}
                   <Button
                     variant="primary"
                     size="lg"
                     fullWidth
                     onClick={handleSubmit}
-                    isLoading={isSubmitting}
-                    className="text-lg py-6"
+                    disabled={!agreeToTerms || isSubmitting}
+                    className={`font-semibold py-3 rounded-lg ${agreeToTerms && !isSubmitting
+                      ? 'bg-[#FFD11A] hover:bg-[#FFD11A]/90 text-black'
+                      : 'bg-[#D7D7D7] text-gray-500 cursor-not-allowed'
+                      }`}
+                    style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}
                   >
-                    {isSubmitting ? 'Processing...' : 'Confirm & Pay'}
+                    {isSubmitting ? 'Processing...' : 'Pay and Confirm'}
                   </Button>
-
-                  <p className="text-xs text-gray-500 text-center leading-relaxed">
-                    By completing this booking, you agree to our terms and conditions
-                  </p>
                 </CardContent>
               </Card>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

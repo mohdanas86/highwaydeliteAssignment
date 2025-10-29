@@ -128,7 +128,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="container mx-auto px-4 lg:px-8 max-w-7xl pt-6 pb-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1440px] pt-4 sm:pt-6 pb-2 sm:pb-4">
         <Button
           variant="ghost"
           onClick={() => router.back()}
@@ -140,15 +140,15 @@ export default function CheckoutPage() {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 lg:px-8 pb-12 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12 max-w-[1440px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
           {/* Left Side - Form */}
           <div className="lg:col-span-2">
             <div className="bg-[#EFEFEF] rounded-xl">
               <Card className="w-full border-none rounded-xl shadow-none">
-                <CardContent className="p-6 space-y-4">
+                <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                   {/* First Name and Email */}
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1">
                       <Input
                         label="First Name"
@@ -175,7 +175,7 @@ export default function CheckoutPage() {
                   </div>
 
                   {/* Promo Code */}
-                  <div className="flex gap-4 items-end">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-end">
                     <div className="flex-1">
                       <Input
                         label="Promo Code"
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <Button
-                      className="rounded-lg px-4 py-2.5 bg-black text-white h-auto"
+                      className="rounded-lg px-4 py-2.5 bg-black text-white h-auto w-full sm:w-auto"
                     >
                       Apply
                     </Button>
@@ -221,8 +221,8 @@ export default function CheckoutPage() {
           {/* Right Side - Booking Summary */}
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-[387px]">
-                <CardContent className="p-2 space-y-3">
+              <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-full max-w-[387px] lg:w-[387px]">
+                <CardContent className="p-3 sm:p-2 space-y-2 sm:space-y-3">
                   {/* Experience */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Experience</span>

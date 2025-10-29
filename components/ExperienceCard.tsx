@@ -31,7 +31,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) =>
 
     return (
         <Card className='p-0 gap-0 border-none overflow-hidden'>
-            <CardHeader className='p-0 h-[170px] overflow-hidden'>
+            <CardHeader className='p-0 h-[150px] sm:h-[170px] overflow-hidden'>
                 {/* Image Container */}
                 <div className="relative aspect-[4/3] ">
                     <Image
@@ -44,31 +44,31 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) =>
                 </div>
             </CardHeader>
 
-            <CardContent className='p-4 bg-[#F0F0F0]'>
+            <CardContent className='p-3 sm:p-4 bg-[#F0F0F0]'>
                 {/* Title */}
 
 
                 {/* Location & Duration */}
-                <div className="flex justify-between items-center gap-2 text-sm text-gray-600 mb-4">
-                    <h1 className="text-md font-semibold text-[var(--black-text)] text-center line-clamp-2 leading-tight">
+                <div className="flex justify-between items-center gap-2 text-sm text-gray-600 mb-3 sm:mb-4">
+                    <h1 className="text-sm sm:text-md font-semibold text-[var(--black-text)] text-center line-clamp-2 leading-tight">
                         {experience.title}
                     </h1>
                     <div className="flex items-center justify-center gap-1">
-                        <Badge className='bg-[var(--badge-color)] rounded-[4px] text-[var(--black-text)]' variant="secondary">{experience.location}</Badge>
+                        <Badge className='bg-[var(--badge-color)] rounded-[4px] text-[var(--black-text)] text-xs sm:text-sm' variant="secondary">{experience.location}</Badge>
                     </div>
 
                 </div>
 
                 {/* Description */}
-                <p className="text-[var(--des-text)] text-sm leading-relaxed mb-4 line-clamp-2">
+                <p className="text-[var(--des-text)] text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 line-clamp-2">
                     {experience.shortDescription || 'Experience the best of local culture and adventure with expert guides.'}
                 </p>
 
                 {/* Price & CTA */}
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className='text-sm text-[var(--black-text)]'>From</span>
-                        <span className="text-xl text-[var(--black-text)]">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        <span className='text-xs sm:text-sm text-[var(--black-text)]'>From</span>
+                        <span className="text-lg sm:text-xl text-[var(--black-text)]">
                             {formatPrice(experience.price)}
                         </span>
                     </div>
@@ -77,7 +77,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) =>
                         onClick={handleViewDetails}
                         variant="primary"
                         size="sm"
-                        className="shadow-sm hover:shadow-md transition-shadow"
+                        className="shadow-sm hover:shadow-md transition-shadow text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2"
                     >
                         View Details
                     </Button>

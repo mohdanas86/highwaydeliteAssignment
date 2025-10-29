@@ -125,7 +125,7 @@ export default function ExperienceDetailsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Back Button */}
-      <div className="container mx-auto px-4 lg:px-8 pt-6 pb-2 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-2 max-w-[1440px]">
         <Button
           variant="ghost"
           onClick={() => router.back()}
@@ -137,12 +137,12 @@ export default function ExperienceDetailsPage() {
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 lg:px-8 pb-12 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 pb-6 sm:pb-8 lg:pb-12 max-w-[1440px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
           {/* Left Side - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Image */}
-            <div className="relative w-full h-[300px] md:h-[400px] lg:h-[406px] rounded-xl overflow-hidden bg-gray-200">
+            <div className="relative w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[406px] rounded-xl overflow-hidden bg-gray-200">
               <Image
                 src={experience.imageUrl || '/placeholder-image.jpg'}
                 alt={experience.title}
@@ -161,7 +161,7 @@ export default function ExperienceDetailsPage() {
             </div>
 
             {/* Description */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <p className="text-[#6C6C6C] leading-relaxed text-[16px]">
                   {experience.description || experience.shortDescription}
@@ -170,8 +170,8 @@ export default function ExperienceDetailsPage() {
 
               {/* Choose Date */}
               <div>
-                <h3 className="text-[18px] font-semibold text-gray-900 mb-4">Choose Date</h3>
-                <div className="flex flex-wrap gap-3 mb-6">
+                <h3 className="text-[16px] sm:text-[18px] font-semibold text-gray-900 mb-3 sm:mb-4">Choose Date</h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
                   {slots.slice(0, 7).map((dateAvail) => {
                     const date = new Date(dateAvail.date);
                     const isSelected = selectedDate === dateAvail.date;
@@ -184,7 +184,7 @@ export default function ExperienceDetailsPage() {
                             setSelectedSlot(null); // Reset time selection when date changes
                           }
                         }}
-                        className={`px-4 py-2 rounded-md border text-sm font-medium transition-all ${isSelected
+                        className={`px-3 sm:px-4 py-2 rounded-md border text-xs sm:text-sm font-medium transition-all ${isSelected
                           ? 'border-[#FFD11A] bg-[#FFD11A] text-black'
                           : dateAvail.hasAvailability
                             ? 'border-gray-300 hover:border-[#FFD11A] hover:bg-[#FFD11A]/10 text-gray-900'
@@ -201,22 +201,22 @@ export default function ExperienceDetailsPage() {
 
               {/* Choose Time */}
               <div>
-                <h3 className="text-[18px] font-semibold text-gray-900 mb-4">Choose Time</h3>
-                <div className="flex flex-wrap gap-3 mb-2">
+                <h3 className="text-[16px] sm:text-[18px] font-semibold text-gray-900 mb-3 sm:mb-4">Choose Time</h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3 mb-2">
                   {selectedDate ?
                     slots.find(dateAvail => dateAvail.date === selectedDate)?.slots.map((slot) => (
                       <button
                         key={slot.id}
                         onClick={() => slot.status === 'available' && setSelectedSlot(slot)}
                         disabled={slot.status !== 'available'}
-                        className={`px-4 py-2 rounded-md border text-sm font-medium transition-all flex items-center gap-2 ${selectedSlot?.id === slot.id
+                        className={`px-3 sm:px-4 py-2 rounded-md border text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-2 ${selectedSlot?.id === slot.id
                           ? 'border-[#FFD11A] bg-[#FFD11A] text-black'
                           : slot.status === 'available'
                             ? 'border-gray-300 hover:border-[#FFD11A] hover:bg-[#FFD11A]/10 text-gray-900'
                             : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                           }`}
                       >
-                        {formatTime(slot.startTime)} <span className='text-[#FF4C0A] text-sm'>{slot.availableSpots} left</span>
+                        {formatTime(slot.startTime)} <span className='text-[#FF4C0A] text-xs sm:text-sm'>{slot.availableSpots} left</span>
                       </button>
                     )) :
                     slots.flatMap(dateAvail =>
@@ -231,14 +231,14 @@ export default function ExperienceDetailsPage() {
                           }
                         }}
                         disabled={slot.status !== 'available'}
-                        className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all flex items-center gap-2 ${selectedSlot?.id === slot.id
+                        className={`px-3 sm:px-4 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-all flex items-center gap-1 sm:gap-2 ${selectedSlot?.id === slot.id
                           ? 'border-[#FFD11A] bg-[#FFD11A] text-black'
                           : slot.status === 'available'
                             ? 'border-gray-300 hover:border-[#FFD11A] hover:bg-[#FFD11A]/10 text-gray-900'
                             : 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
                           }`}
                       >
-                        {formatTime(slot.startTime)} <span className='text-[#FF4C0A] text-sm'>{slot.availableSpots} left</span>
+                        {formatTime(slot.startTime)} <span className='text-[#FF4C0A] text-xs sm:text-sm'>{slot.availableSpots} left</span>
                       </button>
                     ))
                   }
@@ -249,7 +249,7 @@ export default function ExperienceDetailsPage() {
               {/* About */}
               <div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">About</h3>
-                <p className="text-[#838383] leading-relaxed bg-[#EEEEEE] rounded-md px-4 py-2">
+                <p className="text-[#838383] leading-relaxed bg-[#EEEEEE] rounded-md px-4 py-2 text-sm">
                   Scenic routes, trained guides, and safety briefing. Minimum age 10.
                 </p>
               </div>
@@ -259,7 +259,7 @@ export default function ExperienceDetailsPage() {
           {/* Right Side - Booking Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-6">
-              <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-[387px]">
+              <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-full max-w-[387px] lg:w-[387px]">
                 <CardContent className="p-2 space-y-6">
                   {/* Price */}
                   <div className="flex items-center justify-between">

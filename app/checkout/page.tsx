@@ -156,7 +156,6 @@ export default function CheckoutPage() {
                         value={formData.firstName}
                         onChange={handleInputChange}
                         error={errors.firstName}
-                        required
                         placeholder="Enter your first name"
                         className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
                       />
@@ -169,7 +168,6 @@ export default function CheckoutPage() {
                         value={formData.email}
                         onChange={handleInputChange}
                         error={errors.email}
-                        required
                         placeholder="your@email.com"
                         className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
                       />
@@ -184,7 +182,7 @@ export default function CheckoutPage() {
                         name="promoCode"
                         value={formData.promoCode}
                         onChange={handleInputChange}
-                        placeholder="Enter promo code (optional)"
+                        placeholder="Promo code"
                         className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
                       />
                     </div>
@@ -207,7 +205,7 @@ export default function CheckoutPage() {
                     <label
                       htmlFor="agreeToTerms"
                       className="text-sm text-gray-700 cursor-pointer"
-                      style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}
+                      style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '12px', letterSpacing: '0%' }}
                     >
                       I agree to the terms and safety policy
                     </label>
@@ -224,35 +222,35 @@ export default function CheckoutPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-6">
               <Card className="bg-[#EFEFEF] border-none rounded-xl shadow-none overflow-hidden w-[387px]">
-                <CardContent className="p-2 space-y-6">
+                <CardContent className="p-2 space-y-3">
                   {/* Experience */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Experience</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
-                      {experience.title}
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', letterSpacing: '0%' }}>
+                      {experience?.title || 'Experience Name'}
                     </span>
                   </div>
 
                   {/* Date */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Date</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
-                      {formatDate(slot.date, 'short')}
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {slot?.date ? formatDate(slot.date, 'short') : 'Date'}
                     </span>
                   </div>
 
                   {/* Time */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Time</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
-                      {formatTime(slot.startTime)}
+                    <span className="font-semibold text-gray-900 text-right" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
+                      {slot?.startTime ? formatTime(slot.startTime) : 'Time'}
                     </span>
                   </div>
 
                   {/* Quantity */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Qty</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
                       {numberOfGuests}
                     </span>
                   </div>
@@ -260,7 +258,7 @@ export default function CheckoutPage() {
                   {/* Subtotal */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Subtotal</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', letterSpacing: '0%' }}>
                       {formatCurrency(subtotal)}
                     </span>
                   </div>
@@ -268,7 +266,7 @@ export default function CheckoutPage() {
                   {/* Taxes */}
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Taxes</span>
-                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
+                    <span className="font-semibold text-gray-900" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '14px', letterSpacing: '0%' }}>
                       {formatCurrency(tax)}
                     </span>
                   </div>
@@ -276,7 +274,7 @@ export default function CheckoutPage() {
                   {/* Total */}
                   <div className="flex items-center justify-between pt-3 border-t border-gray-300">
                     <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '16px', lineHeight: '20px', letterSpacing: '0%' }}>Total</span>
-                    <span className="" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', lineHeight: '22px', letterSpacing: '0%' }}>
+                    <span className="" style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', letterSpacing: '0%' }}>
                       {formatCurrency(total)}
                     </span>
                   </div>

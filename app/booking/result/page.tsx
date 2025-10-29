@@ -52,7 +52,7 @@ function BookingResultContent() {
 
   useEffect(() => {
     if (success) {
-      const bookingResult = sessionStorage.getItem('bookingResult');
+      const bookingResult = sessionStorage.getItem('highway_delite_booking_result');
       if (bookingResult) {
         try {
           const data = JSON.parse(bookingResult);
@@ -65,7 +65,9 @@ function BookingResultContent() {
   }, [success]);
 
   const handleBackToHome = () => {
-    sessionStorage.removeItem('bookingResult');
+    // Clean up all booking-related data
+    sessionStorage.removeItem('highway_delite_booking_result');
+    sessionStorage.removeItem('highway_delite_booking_data');
     router.push('/');
   };
 

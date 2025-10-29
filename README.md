@@ -1,138 +1,216 @@
-# BookIt: Experiences & Slots
+# Highway Delite - Travel Experience Booking Platform
 
-A modern, full-stack booking application for travel experiences built with Next.js, TypeScript, and TailwindCSS.
+A modern, responsive web application for booking travel experiences built with Next.js, TypeScript, and TailwindCSS.
 
-## 🚀 Features
+## 🌟 Features
 
-- **Experience Listing**: Browse and search through various travel experiences
-- **Detailed Views**: View comprehensive information about each experience
-- **Slot Selection**: Choose available dates and time slots
-- **Smart Booking**: Complete bookings with form validation
-- **Promo Codes**: Apply discount codes for special offers
-- **Responsive Design**: Fully mobile-friendly interface
-- **Modern UI**: Clean, professional design with smooth animations
-- **Type-Safe**: Built with TypeScript for robust code quality
+### Frontend Features
+- **Responsive Design**: Mobile-first approach with desktop optimization (max-width: 1440px)
+- **Experience Discovery**: Browse and search travel experiences with filtering
+- **Real-time Availability**: Check available dates and time slots
+- **Secure Booking Flow**: Complete booking process with validation
+- **Form Validation**: Client-side validation with user-friendly error messages
+- **Loading States**: Skeleton components and loading indicators
+- **Error Handling**: Comprehensive error handling with retry mechanisms
 
-## 📋 Project Structure
+### Technical Features
+- **Type Safety**: Full TypeScript implementation with strict typing
+- **Security**: Input sanitization, rate limiting, and XSS protection
+- **Performance**: Optimized images, code splitting, and efficient re-renders
+- **Accessibility**: ARIA labels, keyboard navigation, and semantic HTML
+- **SEO Optimized**: Meta tags, structured data, and proper heading hierarchy
 
-```
-highwaydelite/
-├── app/
-│   ├── page.tsx                    # Home page - Experience listing
-│   ├── experiences/[id]/page.tsx   # Experience details page
-│   ├── checkout/page.tsx           # Checkout page
-│   ├── booking/result/page.tsx     # Booking confirmation/failure
-│   ├── layout.tsx                  # Root layout
-│   └── globals.css                 # Global styles
-├── components/
-│   ├── ui/                         # Reusable UI components
-│   │   ├── Button.tsx
-│   │   ├── Card.tsx
-│   │   ├── Input.tsx
-│   │   ├── Loading.tsx
-│   │   ├── Badge.tsx
-│   │   └── index.ts
-│   └── ExperienceCard.tsx          # Experience card component
-├── lib/
-│   ├── services/
-│   │   └── api.ts                  # API service layer
-│   ├── config/
-│   │   └── api.config.ts           # API configuration
-│   ├── data/
-│   │   └── mockData.ts             # Mock data for development
-│   └── utils/
-│       └── validation.ts           # Validation utilities
-├── types/
-│   └── index.ts                    # TypeScript type definitions
-└── README.md
-```
+## 🚀 Quick Start
 
-## 🛠️ Tech Stack
+### Prerequisites
+- Node.js 18.0 or higher
+- npm or yarn package manager
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS 4
-- **HTTP Client**: Axios
-- **Font**: Inter (Google Fonts)
-
-## 📦 Getting Started
-
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Run development server**
-   ```bash
-   npm run dev
-   ```
-
-3. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## 🎨 Pages Overview
-
-### 1. Home Page (`/`)
-- Grid layout of experience cards with search and category filtering
-- Responsive design (1/2/3 column grid)
-- Loading states and empty states
-
-### 2. Experience Details (`/experiences/[id]`)
-- Full experience information with image gallery
-- Available date/time slot selection
-- Guest selection and real-time price calculation
-
-### 3. Checkout (`/checkout`)
-- Customer information form with validation
-- Promo code application
-- Order summary and price breakdown
-
-### 4. Booking Result (`/booking/result`)
-- Success confirmation with booking reference
-- Complete booking details
-- Failure handling with helpful error messages
-
-## 💡 Available Promo Codes (Development)
-- `WELCOME10`: 10% off (minimum $50 purchase)
-- `SUMMER25`: 25% off (minimum $100, max $50 discount)
-- `SAVE20`: $20 off (minimum $80 purchase)
-
-## 🔧 Configuration
-
-### Connect to Backend API
-Edit `lib/config/api.config.ts`:
-```typescript
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-```
-
-Create `.env.local`:
-```
-NEXT_PUBLIC_API_URL=your_backend_url_here
-```
-
-## 🚀 Build & Deploy
+### Installation
 
 ```bash
-# Production build
-npm run build
-npm start
+# Clone the repository
+git clone https://github.com/mohdanas86/highwaydeliteAssignment.git
+cd highwaydelite
 
-# Deploy to Vercel
-vercel
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Open browser to http://localhost:3000
 ```
 
-## 📱 Key Features
+### Build for Production
 
-✅ TypeScript for type safety  
-✅ Clean component architecture  
-✅ Proper error handling  
-✅ Form validation  
-✅ Responsive design  
-✅ Accessible UI  
-✅ SEO optimized  
-✅ Performance optimized  
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm start
+```
+
+## � Project Structure
+
+```
+├── app/                          # Next.js App Router pages
+│   ├── checkout/                 # Checkout page
+│   ├── experiences/[id]/         # Experience detail page
+│   ├── booking/result/           # Booking confirmation page
+│   ├── globals.css              # Global styles and CSS variables
+│   ├── layout.tsx               # Root layout component
+│   └── page.tsx                 # Home page
+├── components/                   # React components
+│   ├── ui/                      # Reusable UI components
+│   │   ├── Button.tsx           # Button component with variants
+│   │   ├── Card.tsx             # Card component
+│   │   ├── Input.tsx            # Form input component
+│   │   ├── Loading.tsx          # Loading states and skeletons
+│   │   └── Badge.tsx            # Badge component
+│   ├── ExperienceCard.tsx       # Experience listing card
+│   └── Header.tsx               # Navigation header
+├── lib/                         # Utility libraries
+│   ├── config/                  # Configuration files
+│   │   └── api.config.ts        # API endpoints and configuration
+│   ├── data/                    # Mock data for development
+│   │   └── mockData.ts          # Sample experiences and slots
+│   ├── services/                # API service layer
+│   │   └── api.ts               # HTTP client and API methods
+│   └── utils/                   # Utility functions
+│       ├── storage.ts           # Client-side storage utilities
+│       └── validation.ts        # Form validation helpers
+├── types/                       # TypeScript type definitions
+│   └── index.ts                 # Core type definitions
+├── docs/                        # Documentation
+│   └── BACKEND_API_REQUIREMENTS.md  # Backend API specifications
+└── public/                      # Static assets
+    └── logo.png                 # Application logo
+```
+
+## � Technology Stack
+
+### Frontend
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript 5
+- **Styling**: TailwindCSS 4
+- **HTTP Client**: Axios
+- **Icons**: Lucide React
+- **State Management**: React Hooks (useState, useEffect)
+
+### Development Tools
+- **Linting**: ESLint with Next.js configuration
+- **Type Checking**: TypeScript strict mode
+- **Package Manager**: npm
+
+## 🎨 Design System
+
+### Color Palette
+- **Primary Yellow**: `#FFD11A` (Highway Delite brand color)
+- **Success Green**: `#24AC39` (Confirmations and success states)
+- **Background Gray**: `#EFEFEF` (Card backgrounds)
+- **Text Colors**: 
+  - Primary: `#161616`
+  - Secondary: `#6C6C6C`
+  - Muted: `#838383`
+
+### Typography
+- **Font Family**: Inter (Google Fonts)
+- **Font Weights**: 400 (Regular), 500 (Medium), 600 (Semibold), 700 (Bold)
+- **Responsive Scaling**: Mobile-first with `sm:`, `md:`, `lg:` breakpoints
+
+### Component Standards
+- **Border Radius**: 12px for cards, 4px for buttons
+- **Spacing**: Consistent 8px grid system
+- **Shadows**: Subtle shadows for depth and hierarchy
+
+## 🔒 Security Features
+
+### Client-Side Security
+- **Input Sanitization**: All user inputs are sanitized to prevent XSS attacks
+- **Rate Limiting**: Client-side rate limiting to prevent API abuse
+- **Secure Storage**: Type-safe localStorage/sessionStorage with error handling
+- **CSRF Protection**: Added security headers and request validation
+
+### Data Validation
+- **Type Safety**: Comprehensive TypeScript interfaces
+- **Runtime Validation**: Input validation with user-friendly error messages
+- **Business Logic Validation**: Booking constraints and availability checks
+
+## 📱 Responsive Design
+
+### Breakpoints
+- **Mobile**: `< 640px` (Default)
+- **Tablet**: `640px - 768px` (`sm:`)
+- **Laptop**: `768px - 1024px` (`md:`)
+- **Desktop**: `1024px - 1440px` (`lg:`)
+- **Large Desktop**: `> 1440px` (Max-width constraint)
+
+### Mobile Optimizations
+- Touch-friendly button sizes (minimum 44px tap targets)
+- Optimized image loading and sizing
+- Simplified navigation with hamburger menu
+- Single-column layouts on small screens
+
+## 🛠 Development Guidelines
+
+### Code Quality
+- **ESLint**: Enforces coding standards and best practices
+- **TypeScript**: Strict mode enabled for maximum type safety
+- **Component Structure**: Functional components with hooks
+- **Error Boundaries**: Comprehensive error handling throughout
+
+### Performance Optimization
+- **Image Optimization**: Next.js Image component with proper sizing
+- **Code Splitting**: Automatic code splitting with Next.js
+- **Lazy Loading**: Components and images loaded on demand
+- **Bundle Analysis**: Monitor bundle size and optimize imports
+
+### Testing Strategy
+- **Type Safety**: TypeScript provides compile-time error detection
+- **Manual Testing**: Cross-browser and device testing
+- **Error Scenarios**: Test error states and edge cases
+
+## � API Integration
+
+The application is designed to work with a REST API backend. See [Backend API Requirements](./docs/BACKEND_API_REQUIREMENTS.md) for detailed specifications.
+
+### Key API Endpoints
+- `GET /experiences` - Fetch experiences with filtering
+- `GET /experiences/:id` - Get experience details
+- `GET /experiences/:id/slots` - Get available time slots
+- `POST /bookings` - Create new booking
+- `POST /promo/validate` - Validate promo codes
+
+### Error Handling
+- Comprehensive error categorization
+- User-friendly error messages
+- Retry mechanisms for failed requests
+- Fallback states for network issues
+
+## 🚀 Deployment
+
+### Environment Variables
+```bash
+NEXT_PUBLIC_API_URL=https://api.highwaydelite.com/v1
+```
+
+### Build Optimization
+- Static optimization for improved performance
+- Automatic code splitting
+- Image optimization and compression
+- CSS minification and purging
+
+## 📄 License
+
+This project is proprietary software developed for Highway Delite.
+
+## 🤝 Contributing
+
+This is a private project. For questions or support, please contact the development team.
 
 ---
 
-**Built with ❤️ using Next.js, TypeScript, and TailwindCSS**
+**Built with ❤️ for Highway Delite**
 

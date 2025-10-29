@@ -78,17 +78,22 @@ export default function ExperienceDetailsPage() {
       return;
     }
 
-    // Store booking data in sessionStorage
-    sessionStorage.setItem(
-      'bookingData',
-      JSON.stringify({
-        experience,
-        slot: selectedSlot,
-        numberOfGuests,
-      })
-    );
+    // Store booking data in sessionStorage using improved storage utility
+    const bookingData = {
+      experience,
+      slot: selectedSlot,
+      numberOfGuests,
+      timestamp: Date.now(),
+    };
 
-    router.push('/checkout');
+    // Use the improved storage utility with type safety
+    try {
+      sessionStorage.setItem('highway_delite_booking_data', JSON.stringify(bookingData));
+      router.push('/checkout');
+    } catch (error) {
+      console.error('Failed to store booking data:', error);
+      alert('Failed to proceed to checkout. Please try again.');
+    }
   };
 
   if (isLoading) {

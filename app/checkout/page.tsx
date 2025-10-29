@@ -32,20 +32,39 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Retrieve booking data from sessionStorage
-    const bookingData = sessionStorage.getItem('bookingData');
+    // Retrieve booking data from sessionStorage with validation
+    const bookingData = sessionStorage.getItem('highway_delite_booking_data');
     if (!bookingData) {
+      console.warn('No booking data found, redirecting to home');
       router.push('/');
       return;
     }
 
     try {
       const data = JSON.parse(bookingData);
+
+      // Validate booking data structure
+      if (!data.experience || !data.slot || !data.numberOfGuests) {
+        console.error('Invalid booking data structure');
+        router.push('/');
+        return;
+      }
+
+      // Check if booking data is expired (24 hours)
+      const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      if (data.timestamp && Date.now() - data.timestamp > maxAge) {
+        console.warn('Booking data expired');
+        sessionStorage.removeItem('highway_delite_booking_data');
+        router.push('/');
+        return;
+      }
+
       setExperience(data.experience);
       setSlot(data.slot);
       setNumberOfGuests(data.numberOfGuests);
     } catch (error) {
       console.error('Error parsing booking data:', error);
+      sessionStorage.removeItem('highway_delite_booking_data');
       router.push('/');
     }
   }, [router]);
@@ -103,8 +122,8 @@ export default function CheckoutPage() {
       const response = await bookingService.createBooking(bookingRequest);
 
       if (response.success && response.booking) {
-        sessionStorage.setItem('bookingResult', JSON.stringify(response));
-        sessionStorage.removeItem('bookingData');
+        sessionStorage.setItem('highway_delite_booking_result', JSON.stringify(response));
+        sessionStorage.removeItem('highway_delite_booking_data'); // Clear temporary booking data
         router.push(`/booking/result?success=true&ref=${response.booking.bookingReference}`);
       } else {
         router.push(`/booking/result?success=false&error=${encodeURIComponent(response.message)}`);

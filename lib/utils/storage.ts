@@ -1,8 +1,20 @@
 /**
  * Client-side Storage Utilities
- * Helper functions for sessionStorage and localStorage
+ * Type-safe helper functions for sessionStorage and localStorage with error handling
+ * 
+ * @example
+ * ```typescript
+ * // Store booking data
+ * storage.session.set(STORAGE_KEYS.BOOKING_DATA, bookingData);
+ * 
+ * // Retrieve booking data
+ * const bookingData = storage.session.get<BookingData>(STORAGE_KEYS.BOOKING_DATA);
+ * ```
  */
 
+/**
+ * Type-safe storage operations with comprehensive error handling
+ */
 export const storage = {
     /**
      * Session Storage
@@ -92,11 +104,54 @@ export const storage = {
 };
 
 /**
- * Booking Data Keys
+ * Storage Keys - Centralized key management to prevent typos and conflicts
+ * Use these constants instead of string literals throughout the application
  */
 export const STORAGE_KEYS = {
-    BOOKING_DATA: 'bookingData',
-    BOOKING_RESULT: 'bookingResult',
-    AUTH_TOKEN: 'authToken',
-    USER_PREFERENCES: 'userPreferences',
+    /** Temporary booking data during checkout flow */
+    BOOKING_DATA: 'highway_delite_booking_data',
+    /** Completed booking result */
+    BOOKING_RESULT: 'highway_delite_booking_result',
+    /** JWT authentication token */
+    AUTH_TOKEN: 'highway_delite_auth_token',
+    /** User preferences and settings */
+    USER_PREFERENCES: 'highway_delite_user_preferences',
+    /** Search history for better UX */
+    SEARCH_HISTORY: 'highway_delite_search_history',
+    /** Recently viewed experiences */
+    RECENT_EXPERIENCES: 'highway_delite_recent_experiences',
 } as const;
+
+/**
+ * Type definitions for stored data
+ */
+export interface StoredBookingData {
+    experience: any; // Replace with proper Experience type
+    slot: any; // Replace with proper TimeSlot type
+    numberOfGuests: number;
+    timestamp: number;
+}
+
+export interface UserPreferences {
+    theme: 'light' | 'dark';
+    currency: string;
+    language: string;
+    notifications: boolean;
+}
+
+/**
+ * Utility functions for data validation before storage
+ */
+export const storageValidators = {
+    isValidBookingData: (data: any): data is StoredBookingData => {
+        return data &&
+            data.experience &&
+            data.slot &&
+            typeof data.numberOfGuests === 'number' &&
+            data.numberOfGuests > 0;
+    },
+
+    isExpired: (timestamp: number, maxAgeMs: number = 24 * 60 * 60 * 1000): boolean => {
+        return Date.now() - timestamp > maxAgeMs;
+    },
+};

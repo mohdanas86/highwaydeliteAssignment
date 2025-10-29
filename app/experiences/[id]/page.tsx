@@ -5,25 +5,17 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Experience, TimeSlot, DateAvailability } from '@/types';
 import { experienceService, slotService } from '@/lib/services/api';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import { Badge } from '@/components/ui/Badge';
+import { Button, Card, CardContent } from '@/components/ui';
 import { Loading } from '@/components/ui/Loading';
 import { formatCurrency, formatDate, formatTime, parsePrice } from '@/lib/utils/validation';
 import {
-  MapPin,
-  Clock,
-  Users,
-  Star,
-  CheckCircle,
   XCircle,
   ArrowLeft,
-  Calendar,
-  IndianRupee,
   Minus,
   Plus
 } from 'lucide-react';

@@ -22,7 +22,7 @@ export default function CheckoutPage() {
   const [numberOfGuests, setNumberOfGuests] = useState(1);
 
   const [formData, setFormData] = useState({
-    firstName: '',
+    fullName: '',
     email: '',
     promoCode: '',
   });
@@ -87,7 +87,8 @@ export default function CheckoutPage() {
 
     // Basic validation
     const newErrors: FormErrors = {};
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (formData.fullName.trim() && formData.fullName.trim().length < 2) newErrors.fullName = 'Full name must be at least 2 characters';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!agreeToTerms) newErrors.agreeToTerms = 'You must agree to the terms';
 
@@ -104,12 +105,17 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      // Split full name into first and last name for API compatibility
+      const nameParts = formData.fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : nameParts[0] || '';
+
       const bookingRequest = {
         experienceId: experience.id,
         slotId: slot.id,
         user: {
-          firstName: formData.firstName,
-          lastName: '',
+          firstName: firstName,
+          lastName: lastName,
           email: formData.email,
           phone: '',
           specialRequests: '',
@@ -166,16 +172,16 @@ export default function CheckoutPage() {
             <div className="bg-[#EFEFEF] rounded-xl">
               <Card className="w-full border-none rounded-xl shadow-none">
                 <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                  {/* First Name and Email */}
+                  {/* Full Name and Email */}
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <div className="flex-1">
                       <Input
-                        label="First Name"
-                        name="firstName"
-                        value={formData.firstName}
+                        label="Full Name"
+                        name="fullName"
+                        value={formData.fullName}
                         onChange={handleInputChange}
-                        error={errors.firstName}
-                        placeholder="Enter your first name"
+                        error={errors.fullName}
+                        placeholder="Enter your full name"
                         className="rounded-md p-[20px] bg-[#DDDDDD] border-none outline-none focus:ring-0 focus:ring-transparent focus:outline-none"
                       />
                     </div>

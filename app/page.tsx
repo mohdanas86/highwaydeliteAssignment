@@ -133,26 +133,6 @@ export default function HomePage() {
         {/* Experience Grid */}
         {!isLoading && !error && filteredExperiences.length > 0 && (
           <>
-            {/* Search Results Header */}
-            {/* {searchQuery.trim() && (
-              <div className="mb-8 text-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Search Results for "{searchQuery}"
-                </h2>
-                <p className="text-gray-600">
-                  Found {filteredExperiences.length} experience{filteredExperiences.length !== 1 ? 's' : ''}
-                </p>
-                <Button
-                  onClick={clearSearch}
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 text-gray-500 hover:text-gray-700"
-                >
-                  Clear search
-                </Button>
-              </div>
-            )} */}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
               {filteredExperiences.map((experience) => (
                 <ExperienceCard key={experience.id} experience={experience} />

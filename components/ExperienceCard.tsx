@@ -8,7 +8,6 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { MapPin, Clock, Users, Star } from 'lucide-react';
 import { Experience } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
@@ -54,7 +53,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) =>
                         {experience.title}
                     </h1>
                     <div className="flex items-center justify-center gap-1">
-                        <Badge className='bg-[var(--badge-color)] rounded-[4px] text-[var(--black-text)] text-xs sm:text-sm' variant="secondary">{experience.location}</Badge>
+                        <Badge className='bg-[var(--badge-color)] rounded-[4px] text-[var(--black-text)] text-xs' variant="secondary">{experience.location}</Badge>
                     </div>
 
                 </div>

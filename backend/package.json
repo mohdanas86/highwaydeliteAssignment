@@ -1,21 +1,40 @@
 {
   "name": "highwaydelite-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Highway Delite Booking API - Experience booking platform backend",
   "license": "ISC",
   "author": "anas alam",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon src/index.js",
+    "dev": "nodemon src/index.js",
+    "seed": "node src/utils/seedData.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "prettier --check src/**/*.js",
+    "format": "prettier --write src/**/*.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "mongoose": "^8.19.2"
+    "mongoose": "^8.19.2",
+    "cookie-parser": "^1.4.6"
   },
   "devDependencies": {
-    "prettier": "^3.6.2"
-  }
+    "prettier": "^3.6.2",
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "api",
+    "booking",
+    "experiences",
+    "travel",
+    "mongodb",
+    "express",
+    "nodejs"
+  ]
 }
